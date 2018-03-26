@@ -10,13 +10,18 @@ import Foundation
 
 class PatchRunner {
     let patches: [Runnable]
+    var debugMode: Bool
     
-    init(patches: [Runnable]) {
+    private var patchesToRun: [Runnable] = []
+    
+    init(patches: [Runnable], debugMode: Bool = false) {
         self.patches = patches
+        self.debugMode = debugMode
+        patchesToRun = patches
     }
     
     func run() {
-        guard let patch = patches.filter({ !$0.hasBeenRun() }).first else {
+        guard let patch = patchesToRun.filter({ !$0.hasBeenRun() }).first else {
             debugPrint("all patches run")
             return
         }
@@ -24,10 +29,16 @@ class PatchRunner {
         let semaphore = DispatchSemaphore(value: 0)
         var patchFinished = false
         
-        debugPrint("running patch")
+        debugPrint("running patch \(patch.runIdentifier)")
         patch.run {
             success in
             self.debugPrint("patch finished with \(success)")
+            
+            if !success {
+                self.debugPrint("skip this patch by removing it from the 'to run' array")
+                self.patchesToRun = self.patchesToRun.filter { $0.runIdentifier != patch.runIdentifier }
+            }
+            
             patchFinished = true
             semaphore.signal()
         }
@@ -45,6 +56,8 @@ class PatchRunner {
     }
     
     private func debugPrint(_ message: String) {
-        print("PatchRunner - \(Date()) - \(message)")
+        if debugMode {
+            print("PatchRunner - \(Date()) - \(message)")
+        }
     }
 }

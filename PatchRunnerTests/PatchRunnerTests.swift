@@ -46,7 +46,7 @@ class PatchRunnerTests: XCTestCase {
         let patch2 = Patch(hasBeenRun: { return self.tracker[patch2Key] ?? false }, run: patch2Action)
 
         let patches = [patch1, patch2]
-        let runner = PatchRunner(patches: patches)
+        let runner = PatchRunner(patches: patches, debugMode: true)
         runner.run()
         
         XCTAssertTrue(tracker[patch1Key] ?? false)
@@ -80,11 +80,44 @@ class PatchRunnerTests: XCTestCase {
         let patch2 = Patch(hasBeenRun: { return self.tracker[patch2Key] ?? false }, run: patch2Action)
         
         let patches = [patch1, patch2]
-        let runner = PatchRunner(patches: patches)
+        let runner = PatchRunner(patches: patches, debugMode: true)
         runner.run()
         
         XCTAssertTrue(tracker[patch1Key] ?? false)
         XCTAssertTrue(tracker[patch2Key] ?? false)
+    }
+
+    func testSkipsFailingPatch() {
+        let patch1Key = "patch1"
+        let patch2Key = "patch2"
+        
+        let patch1Action: (@escaping BooleanCompletion) -> Void = {
+            completion in
+            DispatchQueue(label: "queue1").async {
+                sleep(1)
+                XCTAssertFalse(self.tracker[patch2Key] ?? false)
+                completion(false)
+            }
+        }
+        let patch1 = Patch(hasBeenRun: { return self.tracker[patch1Key] ?? false }, run: patch1Action)
+        
+        let patch2Action: (@escaping BooleanCompletion) -> Void = {
+            completion in
+            DispatchQueue(label: "queue1").async {
+                sleep(2)
+                self.tracker[patch2Key] = true
+                XCTAssertFalse(self.tracker[patch1Key] ?? false)
+                completion(true)
+            }
+        }
+        let patch2 = Patch(hasBeenRun: { return self.tracker[patch2Key] ?? false }, run: patch2Action)
+        
+        let patches = [patch1, patch2]
+        let runner = PatchRunner(patches: patches, debugMode: true)
+        runner.run()
+        
+        XCTAssertFalse(tracker[patch1Key] ?? false, "Expected 1st patch to have a False in the local tracker dictionary")
+        XCTAssertTrue(tracker[patch2Key] ?? false, "Expected 2nd patch to have a True in the local tracker dictionary")
     }
 
 }
