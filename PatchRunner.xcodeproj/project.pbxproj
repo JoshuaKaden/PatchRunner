@@ -13,6 +13,8 @@
 		9388AB0F2069503500A23D34 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9388AB0E2069503500A23D34 /* Assets.xcassets */; };
 		9388AB122069503500A23D34 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9388AB102069503500A23D34 /* LaunchScreen.storyboard */; };
 		9388AB1D2069503500A23D34 /* PatchRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9388AB1C2069503500A23D34 /* PatchRunnerTests.swift */; };
+		9388AB29206950DA00A23D34 /* Patch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9388AB28206950DA00A23D34 /* Patch.swift */; };
+		9388AB2D206950F500A23D34 /* PatchRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9388AB2C206950F500A23D34 /* PatchRunner.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +38,8 @@
 		9388AB182069503500A23D34 /* PatchRunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PatchRunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9388AB1C2069503500A23D34 /* PatchRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatchRunnerTests.swift; sourceTree = "<group>"; };
 		9388AB1E2069503500A23D34 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9388AB28206950DA00A23D34 /* Patch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Patch.swift; sourceTree = "<group>"; };
+		9388AB2C206950F500A23D34 /* PatchRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatchRunner.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +81,7 @@
 		9388AB062069503500A23D34 /* PatchRunner */ = {
 			isa = PBXGroup;
 			children = (
+				9388AB27206950C900A23D34 /* Code */,
 				9388AB072069503500A23D34 /* AppDelegate.swift */,
 				9388AB092069503500A23D34 /* ViewController.swift */,
 				9388AB0B2069503500A23D34 /* Main.storyboard */,
@@ -94,6 +99,15 @@
 				9388AB1E2069503500A23D34 /* Info.plist */,
 			);
 			path = PatchRunnerTests;
+			sourceTree = "<group>";
+		};
+		9388AB27206950C900A23D34 /* Code */ = {
+			isa = PBXGroup;
+			children = (
+				9388AB28206950DA00A23D34 /* Patch.swift */,
+				9388AB2C206950F500A23D34 /* PatchRunner.swift */,
+			);
+			path = Code;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -199,7 +213,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9388AB2D206950F500A23D34 /* PatchRunner.swift in Sources */,
 				9388AB0A2069503500A23D34 /* ViewController.swift in Sources */,
+				9388AB29206950DA00A23D34 /* Patch.swift in Sources */,
 				9388AB082069503500A23D34 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -11,26 +11,80 @@ import XCTest
 
 class PatchRunnerTests: XCTestCase {
     
+    var tracker: [String : Bool] = [:]
+
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        tracker = [:]
     }
     
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        tracker = [:]
         super.tearDown()
     }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    func testTwoPatchesInOrder() {
+        let patch1Key = "patch1"
+        let patch2Key = "patch2"
+        
+        let patch1Action: (@escaping BooleanCompletion) -> Void = {
+            completion in
+            sleep(1)
+            self.tracker[patch1Key] = true
+            XCTAssertFalse(self.tracker[patch2Key] ?? false)
+            completion(true)
         }
+        let patch1 = Patch(hasBeenRun: { return self.tracker[patch1Key] ?? false }, run: patch1Action)
+        
+        let patch2Action: (@escaping BooleanCompletion) -> Void = {
+            completion in
+            sleep(2)
+            self.tracker[patch2Key] = true
+            XCTAssertTrue(self.tracker[patch1Key] ?? false)
+            completion(true)
+        }
+        let patch2 = Patch(hasBeenRun: { return self.tracker[patch2Key] ?? false }, run: patch2Action)
+
+        let patches = [patch1, patch2]
+        let runner = PatchRunner(patches: patches)
+        runner.run()
+        
+        XCTAssertTrue(tracker[patch1Key] ?? false)
+        XCTAssertTrue(tracker[patch2Key] ?? false)
     }
     
+    func testTwoAsyncPatchesInOrder() {
+        let patch1Key = "patch1"
+        let patch2Key = "patch2"
+
+        let patch1Action: (@escaping BooleanCompletion) -> Void = {
+            completion in
+            DispatchQueue(label: "queue1").async {
+                sleep(1)
+                self.tracker[patch1Key] = true
+                XCTAssertFalse(self.tracker[patch2Key] ?? false)
+                completion(true)
+            }
+        }
+        let patch1 = Patch(hasBeenRun: { return self.tracker[patch1Key] ?? false }, run: patch1Action)
+        
+        let patch2Action: (@escaping BooleanCompletion) -> Void = {
+            completion in
+            DispatchQueue(label: "queue1").async {
+                sleep(2)
+                self.tracker[patch2Key] = true
+                XCTAssertTrue(self.tracker[patch1Key] ?? false)
+                completion(true)
+            }
+        }
+        let patch2 = Patch(hasBeenRun: { return self.tracker[patch2Key] ?? false }, run: patch2Action)
+        
+        let patches = [patch1, patch2]
+        let runner = PatchRunner(patches: patches)
+        runner.run()
+        
+        XCTAssertTrue(tracker[patch1Key] ?? false)
+        XCTAssertTrue(tracker[patch2Key] ?? false)
+    }
+
 }
